@@ -6,7 +6,7 @@ An advanced, corporate-grade backend re-engineering milestone that completely de
 
 ## Architectural Overview: Decoupling the Presentation Layer
 
-Within enterprise architectures—and specifically for my **Honors Software Engineering Final Year Project ("Digital Vault")**—the core backend must exist as a pure, headless data utility. 
+Within enterprise architectures and specifically for my **Honors Software Engineering Final Year Project ("Digital Vault")** the core backend must exist as a pure, headless data utility. 
 
 Traditional application controllers rely on the server rendering heavy visual HTML pages (`login.html` / `register.html`). However, standalone frontend frameworks (such as React or Angular) and mobile runtime targets (Android / iOS applications) cannot consume or render raw server HTML files. They require clean, uniform, structured text arrays. **LabAPI Connect** resolves this by opening programmatic network windows that ingest and broadcast structured data over standard HTTP request protocols.
 
