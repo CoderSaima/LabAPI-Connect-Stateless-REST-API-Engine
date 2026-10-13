@@ -1,4 +1,4 @@
-#  Project 6: LabAPI Connect (Stateless REST API Engine)
+#  LabAPI Connect (Stateless REST API Engine)
 
 An advanced, corporate-grade backend re-engineering milestone that completely decouples the identity and credential verification core alongside safe file asset tracking from layout-dependent user interfaces. By incorporating the **Django REST Framework (DRF)**, this application transforms relational model constraints into platform-agnostic, high-performance **REST API Endpoints**. The subsystem operates entirely out-of-band from standard visual presentation layers, communicating across network channels using stateless **JSON (JavaScript Object Notation)** payload strings.
 
