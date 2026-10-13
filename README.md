@@ -1,81 +1,48 @@
-#  LabAPI Connect (Stateless REST API Engine)
+#  LabAPI Connect (Headless REST API Core)
 
-An advanced, corporate-grade backend re-engineering milestone that completely decouples the identity and credential verification core alongside safe file asset tracking from layout-dependent user interfaces. By incorporating the **Django REST Framework (DRF)**, this application transforms relational model constraints into platform-agnostic, high-performance **REST API Endpoints**. The subsystem operates entirely out-of-band from standard visual presentation layers, communicating across network channels using stateless **JSON (JavaScript Object Notation)** payload strings.
+This is a standalone, decoupled backend engine designed to move my **Digital Vault Final Year Project (FYP)** away from traditional, heavy server-rendered HTML pages. By incorporating **Django REST Framework (DRF)**, I have transformed my underlying database tables into a series of stateless, platform-agnostic **REST API Endpoints** that communicate purely via compressed **JSON** strings. 
 
----
-
-##  Architectural Overview: Decoupling the Presentation Layer
-
-Within enterprise architectures—and specifically for my **Honors Software Engineering Final Year Project ("Digital Vault")**—the core backend must exist as a pure, headless data utility. 
-
-Traditional application controllers rely on the server rendering heavy visual HTML pages (`login.html` / `register.html`). However, standalone frontend frameworks (such as React or Angular) and mobile runtime targets (Android / iOS applications) cannot consume or render raw server HTML files. They require clean, uniform, structured text arrays. **LabAPI Connect** resolves this by opening programmatic network windows that ingest and broadcast structured data over standard HTTP request protocols.
-
-```text
-  [ Client UI: React / Android Mobile App ]
-                     │
-        Streams Inbound JSON Payload
-                     │
-                     ▼
-    ┌─────────────────────────────────┐
-    │     Django REST Framework       │ ◄── [ Serializer Sanitization Layer ]
-    └─────────────────────────────────┘
-                     │
-       Programmatic ORM Database Write
-                     │
-                     ▼
-           [ SQLite Database Core ]
-```
+This means the security core can sit on a cloud server while simultaneously powering a web app built in React, or a mobile app running on Android or iOS.
 
 ---
 
-##  System Architectural Layout & API Pipeline
+##  System Architectural Layout & Operations
 
-The backend runtime ecosystem manages data transit across a two-tier transformation layer:
+The application isolates network data transit across two distinct pipelines:
 
-###  1. The Serialization Translation Engine
-Because databases only comprehend complex relational structures, while external clients only process raw text strings, a **Serializer** serves as a bidirectional network translator:
-* **Inbound (Deserialization):** Captures incoming raw JSON data parameters, checks inputs for type safety, enforces structural rules, and transforms strings into model objects.
-* **Outbound (Serialization):** Flattens database model objects down into universal JSON text strings to be streamed across the wire back to the client interface.
-* **Security Matrix Hardening:** The serializer embeds an explicit `write_only: True` configuration on password attributes. This architecture permits users to securely submit passwords for account creation, but permanently seals the endpoint from ever leaking or printing cryptographic password hash signatures on outbound data queries.
-* **Collection Aggregation:** Employs internal multi-record array mapping loops when initialized with the `many=True` parameter to securely pack database collections into neat machine-readable lists.
-
-###  2. Stateless View Controllers 
-Eradicates stateful tracking loops and session cookie overhead by employing strict REST guidelines:
-* **Explicit HTTP Request Binding:** Implements explicit `@api_view(['POST'])` and `@api_view(['GET'])` decorator gates to force strict operational controls, instantly intercepting and dropping unauthorized request methods with standard `HTTP 405 Method Not Allowed` rejections.
-* **Standardized Status Matrix Envelopes:** Returns pure dictionary responses inside `Response()` wrappers that automatically transform into optimized JSON text data payloads matching exact corporate server response parameters:
-  * `201 Created` — Emitted upon a successful data ingestion, cryptographic account hashing, or asset record insertion cycle.
-  * `200 OK` — Issued upon successful verification of matching password hashes or a complete list array payload dump.
-  * `400 Bad Request` — Returned if validation constraints break down, keys are missing, input string spellings mismatch, or unique account emails clash.
+1. **`labapi_model` (Identity Layer):** Processes user signup and login verification streams. Outbound reads utilize strict `write_only: True` parameters on password rows to ensure cryptographic signatures never leak across the public wire.
+2. **`asset_record_model` (Vault Asset Ledger):** Tracks structural meta-information for secure vault documents. It maps strings containing document titles, text descriptions, and classification tags.
 
 ---
 
-##  Relational Database Schema Profiles
+##  API Endpoint Matrix
 
-The application processes backend operations over two isolated database schemas:
-
-1. **`labapi_model` Table (User Accounts):** Coordinates system identity, featuring a strict unique indexing filter mapping email rows to completely block duplicate user entries.
-2. **`asset_record_model` Table (Vault Assets):** Manages metadata parameters for secure files, recording titles, technical text descriptions, and classification tags along with explicit creation timestamps.
-
----
-
-##  System Production API Endpoint Matrix
-
-The application opens explicit programmatic channels to process network verification and document ledger transactions:
-
-| API Route | HTTP Method | Inbound Payload Requirements | Outbound Network Response | Primary Operational Purpose |
+| API Route | HTTP Method | Inbound JSON Payload | Outbound Status Code | Purpose |
 | :--- | :--- | :--- | :--- | :--- |
-| `/api/auth/register/` | **POST** | `{ "name": "", "email": "", "password": "" }` | `201 Created` with serialization payload OR `400 Bad Request` | Processes parameters, runs unique constraint lookups, hashes passwords, and writes user data to disk. |
-| `/api/auth/login/` | **POST** | `{ "email": "", "password": "" }` | `200 OK` with profile confirmation OR `400 Bad Request` | Targets specific SQLite tables via email lookups and cryptographically verifies credentials without tracking UI state. |
-| `/api/assets/create/` | **POST** | `{ "title": "", "description": "", "category": "" }` | `201 Created` with logged asset object OR `400 Bad Request` | Ingests asset key-value metadata payloads, executes model data constraints, and logs records to the database. |
-| `/api/assets/all/` | **GET** | *None (Blank Payload)* | `200 OK` with nested structural array list of records | Extracts all active dataset rows out of SQLite via the ORM and streams back flat, universal JSON records. |
+| `/api/auth/register/` | **POST** | `{ "name": "", "email": "", "password": "" }` | `201 Created` | Creates a new user profile and cryptographically salts the password string via `make_password`. |
+| `/api/auth/login/` | **POST** | `{ "email": "", "password": "" }` | `200 OK` | Verifies matching hashes using `check_password` out-of-band without session state binding. |
+| `/api/assets/create/` | **POST** | `{ "title": "", "description": "", "category": "" }` | `201 Created` | Ingests metadata parameters for a secure vault document. |
+| `/api/assets/all/` | **GET** | *None (Blank Payload)* | `200 OK` | Uses `many=True` looping parameters to return an aggregate list array of all logged items. |
 
 ---
 
-##  Technical Stack & Engineering Skill Profile
-* **Framework Core:** Django 5.x / Python 3.x
-* **API Toolkit Core:** Django REST Framework (DRF Architecture)
-* **Data Transit Format:** JSON (JavaScript Object Notation)
-* **Core Concepts Practiced:** ModelSerializer Multi-Class Configurations, Headless/Stateless Backend Architecture, Collection Serializer Loops (`many=True`), Inbound JSON Parsing Validation, Explicit Network Status Enum Mapping.
+##  Developer Implementation Log & Debugging Notebook
+
+To maintain strong conceptual clarity, I document the exact live-testing obstacles and architectural bug fixes encountered during development:
+
+### ⚡ Case Study 1: Resolving the Login `IntegrityError` Loop
+* **The Bug:** During live testing at `/api/auth/login/`, the server crashed with an `IntegrityError: UNIQUE constraint failed: email`. 
+* **The Diagnosis:** The application-level `urls.py` matrix was misconfigured, accidentally directing login requests to the registration view controller. The server mistook a sign-in query for a new sign-up attempt. Because the email was already locked down with a `unique=True` field rule, SQLite rejected the operation.
+* **The Fix:** Isolated the routes cleanly, binding the login path exclusively to a view logic flow that handles object retrieval (`.objects.get`) and cryptographic string matching instead of calling `.save()`.
+
+### ⚡ Case Study 2: Eradicating the Serializer `AttributeError`
+* **The Bug:** Testing the asset creator view initially outputted an `AttributeError: 'list' object has no attribute 'values'`.
+* **The Diagnosis:** This was an input payload structure mismatch. The client browser cache transmitted a bracket-enclosed list array (`[...]`) instead of a raw key-value dictionary object (`{...}`). Furthermore, a slight typo in the serializer where `category_tag` was utilized instead of the true database field `category` disrupted parsing.
+* **The Fix:** Reconfigured `serializers.py` with explicit assignment operators mapping fields exactly to the schema columns, executed a hard browser cache refresh (`Ctrl + F5`), and locked input structures to single JSON objects.
 
 ---
-*Developed as part of an Advanced Software Engineering portfolio, proving capability in designing headless backend infrastructure and secure stateless authentication gateways.*
+
+## Tech Stack & Engineering Profile
+* **Framework Core:** Django 5.x / Django REST Framework (DRF)
+* **Data Transfer Protocol:** Stateless JSON (JavaScript Object Notation)
+* **Key Skills Cultivated:** Bidirectional Serializer Mapping, Out-of-band View Architecture, QuerySet Array Manipulation (`many=True`), Forensic Terminal Exception Diagnostics.
