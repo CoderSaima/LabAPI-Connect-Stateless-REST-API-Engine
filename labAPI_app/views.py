@@ -1,8 +1,8 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import SecAuthSerializer
-from .models import labapi_model
+from .serializers import SecAuthSerializer, assset_record_serializer
+from .models import labapi_model, asset_record_model
 from django.contrib.auth.hashers import check_password
 
 @api_view(['POST'])
@@ -69,3 +69,46 @@ def api_login_view(request):
             "status":"error",
             "message":"Invalid authentication access!"
         },status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def api_asset_create(request):
+    """
+    Stateless REST API Endpoint: Ingests raw JSON asset metadata payloads,
+    validates fields via the AssetRecordSerializer, and saves them to the DB.
+    """
+
+    serializer = assset_record_serializer(data = request.data)
+    if serializer.is_valid():
+        serializer.save()
+
+        return Response(
+            {
+                "status": "success",
+                "message": "Asset is created successfully"
+            }, status=status.HTTP_200_OK
+        )
+    else:
+        return Response(
+            {
+                "status": "error",
+                "message": "Invalid credentials, Access Denied",
+                "errors": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST
+        )
+
+@api_view(['GET'])
+def api_list_assets(request):
+    """
+    Stateless REST API Endpoint: Fetches all relational database asset records,
+    flattens them into a machine-readable JSON list array, and streams them out.
+    """
+    assets = asset_record_model.objects.all()
+    serializer = assset_record_serializer(assets, many=True)
+
+    return Response(
+        {
+            "status": "success",
+            "total_record": len(assets),
+            "vault" : serializer.data
+        }, status=status.HTTP_200_OK
+    )
